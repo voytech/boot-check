@@ -12,27 +12,27 @@
 (deftask test-kibit []
   (set-env! :source-paths #{"src" "test"})
   (comp
-    (check/with-kibit)))
+    (check/with-kibit :throw-on-errors true)))
 
 (deftask test-yagni []
   (set-env! :source-paths #{"src" "test"})
   (comp
     (check/with-yagni)
-    (check/with-yagni :options {:entry-points ["test.with-yagni/-main"
-                                               "test.with-yagni/func-the-second"
-                                               42]})))
+    (check/with-yagni :throw-on-errors true :options {:entry-points ["test.with-yagni/-main"]
+                                                                    "test.with-yagni/func-the-second"
+                                                                     42})))
 
 (deftask test-eastwood []
   (set-env! :source-paths #{"src" "test"})
   (comp
-    (check/with-eastwood :options {:exclude-linters [:unused-ret-vals]})))
+    (check/with-eastwood :throw-on-errors true :options {:exclude-linters [:unused-ret-vals]})))
 
 (deftask test-bikeshed []
   (set-env! :source-paths #{"src" "test"})
   (comp
     (check/with-bikeshed)
-    (check/with-bikeshed :options {:verbose true
-                                   :max-line-length 42})))
+    (check/with-bikeshed :throw-on-errors true :options {:verbose true}
+                                                        :max-line-length 42)))
 
 (deftask check-all []
   (comp
@@ -51,4 +51,3 @@
        :scm         {:url "https://github.com/tolitius/boot-check"}
        :license     {"Eclipse Public License"
                      "http://www.eclipse.org/legal/epl-v10.html"}})
-
