@@ -37,3 +37,11 @@
 (defn group-by-key [issues])
 
 (defn group-by-severity [issues])
+
+(defn group-by-file [issues])
+
+(defmulti reporter-aware-issue-handler #(:reporter %))
+
+(defn handle-issue [issue options]
+  (let [handle (reporter-aware-issue-handler options)]
+    (handle issue)))

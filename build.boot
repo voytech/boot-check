@@ -3,7 +3,8 @@
 (set-env!
   :source-paths #{"src"}
   :dependencies '[[boot/core              "2.7.2"]
-                  [adzerk/bootlaces       "0.1.13"          :scope "test"]])
+                  [adzerk/bootlaces       "0.1.13"          :scope "test"]
+                  [hiccup                 "1.0.5"]])
 
 (require '[tolitius.boot-check :as check]
          '[adzerk.bootlaces :refer :all]
@@ -25,7 +26,8 @@
 (deftask test-eastwood []
   (set-env! :source-paths #{"src" "test"})
   (comp
-    (check/with-eastwood :throw-on-errors true :options {:exclude-linters [:unused-ret-vals]})))
+    (check/with-eastwood :throw-on-errors true :options {:exclude-linters [:unused-ret-vals]
+                                                         :reporter :html})))
 
 (deftask test-bikeshed []
   (set-env! :source-paths #{"src" "test"})
