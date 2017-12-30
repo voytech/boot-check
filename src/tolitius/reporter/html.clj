@@ -6,16 +6,22 @@
 (defonce dom (atom {}))
 
 (defmethod r/init-report :html [options]
-  (println (html
-              [:body
-                [:h1 "Ass found issues:"]])))
+  (reset! dom [:body [:h1 "All found issues:"]]))
+
+(defmethod r/finish-report :html [options]
+  (println "=====report ready======")
+  (println (html @dom)))
+
 
 (defn issue-html [issue]
-  [:div [:span (:message issue)]])
+  (let [{:keys [linter-tool message key severity coords]} issue]
+    [:div [:span key]
+      [:div [:span (:file coords)]]
+      [:div [:span linter-tool]]
+      [:div [:span message]]
+      [:div [:span severity]]]))
+
 
 (defmethod reporter-aware-issue-handler :html [options]
    (fn [issue]
-     (let [issue-component (issue-html issue)]
-      (println "==================================")
-      (println issue-component)
-      (println "=================================="))))
+     (swap! dom conj (issue-html issue))))
