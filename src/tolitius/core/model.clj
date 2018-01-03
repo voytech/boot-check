@@ -40,8 +40,17 @@
 
 (defn group-by-file [issues])
 
-(defmulti reporter-aware-issue-handler #(:reporter %))
+(defmulti report (fn [issues options] (:reporter options)))
 
-(defn handle-issue [issue options]
-  (let [handle (reporter-aware-issue-handler options)]
-    (handle issue)))
+(defn- make-issue-handler [issues options]
+  (fn [issue]
+    (println "handled issue...")
+    (swap! issues conj issue)))
+
+(defn- make-completion-handler [issues options]
+  (fn [] (report issues options)))
+
+(defn init [options]
+  (let [issues (atom [])]
+    {:handle-issue (make-issue-handler issues options)
+     :handle-finished (make-completion-handler issues options)}))
