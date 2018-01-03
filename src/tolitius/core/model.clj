@@ -38,7 +38,8 @@
 
 (defn group-by-severity [issues])
 
-(defn group-by-file [issues])
+(defn group-by-file [issues]
+  (group-by #(->> % :coords :file) issues))
 
 (defmulti report (fn [issues options] (:reporter options)))
 
