@@ -7,7 +7,13 @@
   (let [by-files (m/group-by-file issues)]
     ()))
 
-(defn issue->html [issue]
+(defn- severity-style [severity]
+  (cond
+    (= severity "normal") "table-warning"
+    (= severity "severe") "table-danger"
+    :else ""))
+
+(defn issue-details [issue]
   (let [{:keys [linter-tool message key severity coords]} issue]
     [:div {:class "card border-warning mb-3" :style "max-width: 40rem;"}
       [:div {:class "card-body text-warning"}
@@ -16,6 +22,17 @@
       [:ul {:class "list-group list-group-flush"}
         [:li {:class "list-group-item"} (str (:file coords) " [ " (:line coords) ":" (:column coords) " ] ")]
         [:li {:class "list-group-item"} [:span "Severity"] [:b (name severity)]]]]))
+
+
+(defn issue-table-cell [issue]
+  (let [{:keys [linter-tool message key severity coords]} issue]
+    [:tr {:class (severity-style severity)}
+      [:td linter-tool]
+      [:td key]
+      [:td message]
+      [:td (:file coords)]
+      [:td (str "[ " (:line coords) ":" (:column coords) " ]")]
+      [:td severity]]))
 
 (defn build [issues options]
   (html
@@ -27,9 +44,18 @@
                  :integrity "sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
                  :crossorigin "anonymous"}]]]
     [:body
-      [:h1 "All found issues:"]
+      [:h1 "Found issues:"]
       [:div {:class "container-fluid"}
-        (doall (map issue->html @issues))]]))
+        [:table {:class "table table-sm table-responsive table-striped"}
+          [:thead
+            [:th "Tool"]
+            [:th "Type"]
+            [:th "Message"]
+            [:th "File"]
+            [:th "Cursor"]
+            [:th "Severity"]]
+          [:tbody
+           (doall (map issue-table-cell @issues))]]]]))
 
 (defmethod m/report :html [issues options]
   (let [page (build issues options)]

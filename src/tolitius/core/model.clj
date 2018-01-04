@@ -45,7 +45,6 @@
 
 (defn- make-issue-handler [issues options]
   (fn [issue]
-    (println "handled issue...")
     (swap! issues conj issue)))
 
 (defn- make-completion-handler [issues options]

@@ -7,12 +7,15 @@
   '[[jonase/eastwood "0.2.5" :exclusions [org.clojure/clojure]]])
 
 (defn eastwood-linting-callback [handle-issue options]
-  (fn [{:keys [warn-data kind]}]
+  (fn [{:keys [warn-data kind] :as data}]
+    (println  kind)
     (when (= :lint-warning kind)
       (let [{:keys [file line column linter msg form]} warn-data
             issue (->> (coords file line column)
                        (issue :eastwood linter msg))]
         (handle-issue issue)))))
+    ;(when (= :debug-form-emitted kind)
+    ;  (println data))))
 
 (defn check [pod-pool fileset options & args]
   (let [worker-pod (pod-pool :refresh)
