@@ -1,5 +1,6 @@
 (ns tolitius.reporter.html
   (:require [tolitius.core.model :as m]
+            [tolitius.core.reporting :as r]
             [hiccup.core :refer :all]))
 
 
@@ -57,6 +58,9 @@
           [:tbody
            (doall (map issue-table-cell @issues))]]]]))
 
-(defmethod m/report :html [issues options]
-  (let [page (build issues options)]
-    (println page)))
+(defmethod r/report :html [fileset tmpdir options]
+  (println "reporting to html")
+  (let [issues (m/load-issues fileset)
+        _ (println issues)
+        page (build issues options)]
+    (spit (str "issues.html") page)))

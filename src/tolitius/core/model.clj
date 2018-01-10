@@ -1,4 +1,6 @@
-(ns tolitius.core.model)
+(ns tolitius.core.model
+  (:require [boot.core :as c]
+            [clojure.java.io :as io]))
 
 (defrecord Coords [file line column line-end column-end])
 
@@ -41,16 +43,30 @@
 (defn group-by-file [issues]
   (group-by #(->> % :coords :file) issues))
 
-(defmulti report (fn [issues options] (:reporter options)))
+(defn load-issues [fileset]
+  (doseq [file  (c/input-files fileset)]
+    (println file))
+
+  (if-let [issues (->> fileset c/input-files (c/by-name ["issues.edn"]) first)]
+    (read-string (-> issues c/tmp-file slurp))
+    []))
+
+(defn append-issues [fileset tmpdir issues]
+  (c/empty-dir! tmpdir)
+  (let [content (conj (load-issues fileset) issues)
+        str-content (pr-str content)
+        issues-file (io/file tmpdir "issues.edn")]
+     (doto issues-file
+        io/make-parents
+        (spit str-content))
+     (let [new (-> fileset (c/add-source tmpdir))]
+       (c/commit! new))))
 
 (defn- make-issue-handler [issues options]
   (fn [issue]
     (swap! issues conj issue)))
 
-(defn- make-completion-handler [issues options]
-  (fn [] (report issues options)))
-
-(defn init [options]
+(defn issues-handling [options]
   (let [issues (atom [])]
-    {:handle-issue (make-issue-handler issues options)
-     :handle-finished (make-completion-handler issues options)}))
+    {:on-issue (make-issue-handler issues options)
+     :issues issues}))
