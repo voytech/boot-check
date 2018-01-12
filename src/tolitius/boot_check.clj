@@ -27,11 +27,12 @@
 
 (defn with-result [fileset tmpdir f msg throw?]
   (let [{:keys [errors warnings]} (f)]
-    (when warnings
-      (m/append-issues fileset tmpdir warnings))
     (when (and errors throw?)
       (throw (ex-info msg
-                      {:causes errors})))))
+                      {:causes errors})))
+    (when warnings
+      (m/append-issues fileset tmpdir warnings))))
+
 
 (deftask with-kibit
   "Static code analyzer for Clojure, ClojureScript, cljx and other Clojure variants.

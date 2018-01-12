@@ -44,16 +44,13 @@
   (group-by #(->> % :coords :file) issues))
 
 (defn load-issues [fileset]
-  (doseq [file  (c/input-files fileset)]
-    (println file))
-
   (if-let [issues (->> fileset c/input-files (c/by-name ["issues.edn"]) first)]
     (read-string (-> issues c/tmp-file slurp))
     []))
 
 (defn append-issues [fileset tmpdir issues]
   (c/empty-dir! tmpdir)
-  (let [content (conj (load-issues fileset) issues)
+  (let [content (concat (load-issues fileset) issues)
         str-content (pr-str content)
         issues-file (io/file tmpdir "issues.edn")]
      (doto issues-file

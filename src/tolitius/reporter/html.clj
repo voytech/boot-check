@@ -56,11 +56,10 @@
             [:th "Cursor"]
             [:th "Severity"]]
           [:tbody
-           (doall (map issue-table-cell @issues))]]]]))
+           (doall (map issue-table-cell issues))]]]]))
 
 (defmethod r/report :html [fileset tmpdir options]
   (println "reporting to html")
   (let [issues (m/load-issues fileset)
-        _ (println issues)
         page (build issues options)]
-    (spit (str "issues.html") page)))
+    (spit "issues.html" page)))

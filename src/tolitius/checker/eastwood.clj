@@ -32,8 +32,8 @@
         (if some-warnings
           (do
             (boot.util/warn (str "\nWARN: eastwood found some problems ^^^ \n\n"))
-            (eastwood/eastwood-core (eastwood/last-options-map-adjustments  ;; TODO rerun to get the actual errors, but otherwise need to rewrite eastwood/eastwood
-                                         {:source-paths sources#
-                                          :callback (checker/eastwood-linting-callback on-issue ~options)}))
-            {:warnings @issues})
+            {:errors (eastwood/eastwood-core (eastwood/last-options-map-adjustments  ;; TODO rerun to get the actual errors, but otherwise need to rewrite eastwood/eastwood
+                                              {:source-paths sources#
+                                               :callback (checker/eastwood-linting-callback on-issue ~options)}))
+             :warnings @issues})
           (boot.util/info "\nlatest report from eastwood.... [You Rock!]\n"))))))

@@ -22,5 +22,6 @@
         (if-not (zero? (count problems#))
           (do
             (boot.util/warn (str "\nWARN: kibit found some problems: \n\n" {:problems (set problems#)} "\n"))
-            {:errors problems#})
+            {:warnings problems#
+             :errors problems#})
           (boot.util/info "\nlatest report from kibit.... [You Rock!]\n"))))))
