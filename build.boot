@@ -19,9 +19,9 @@
   (set-env! :source-paths #{"src" "test"})
   (comp
     (check/with-yagni)
-    (check/with-yagni :throw-on-errors true :options {:entry-points ["test.with-yagni/-main"]
-                                                                    "test.with-yagni/func-the-second"
-                                                                     42})))
+    (check/with-yagni :throw-on-errors false :options {:entry-points ["test.with-yagni/-main"
+                                                                      "test.with-yagni/func-the-second"
+                                                                      42]})))
 
 (deftask test-eastwood []
   (set-env! :source-paths #{"src" "test"})
@@ -46,6 +46,7 @@
   (comp
     (test-kibit)
     (test-eastwood)
+    (test-yagni)
     (check/report :options {:reporter :html})))
 
 (bootlaces! +version+)
