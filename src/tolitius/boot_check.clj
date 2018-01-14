@@ -48,8 +48,7 @@
       (with-result fileset tmpdir
                   #(kibit/check pod-pool fileset)          ;; TODO with args
                   "kibit checks fail"
-                  throw-on-errors)
-      fileset)))
+                  throw-on-errors))))
 
 (deftask with-yagni
   "Static code analyzer for Clojure that helps you find unused code in your applications and libraries.
@@ -106,5 +105,6 @@
   [o options OPTIONS edn "Reporting options"]
   (let [tmpdir (core/tmp-dir!)]
     (core/with-pre-wrap fileset
-      (r/report fileset tmpdir options)
-      fileset)))
+      (when-let [issues (m/load-issues fileset)]
+        (r/report issues options)
+        fileset))))

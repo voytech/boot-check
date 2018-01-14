@@ -13,7 +13,7 @@
 (deftask test-kibit []
   (set-env! :source-paths #{"src" "test"})
   (comp
-    (check/with-kibit :throw-on-errors true)))
+    (check/with-kibit :throw-on-errors false)))
 
 (deftask test-yagni []
   (set-env! :source-paths #{"src" "test"})
@@ -26,8 +26,7 @@
 (deftask test-eastwood []
   (set-env! :source-paths #{"src" "test"})
   (comp
-    (check/with-eastwood :throw-on-errors false :options {:exclude-linters [:unused-ret-vals]})
-    (check/report :options {:reporter :html})))
+    (check/with-eastwood :throw-on-errors false :options {:exclude-linters [:unused-ret-vals]})))
 
 (deftask test-bikeshed []
   (set-env! :source-paths #{"src" "test"})
@@ -42,6 +41,12 @@
     (test-yagni)
     (test-eastwood)
     (test-bikeshed)))
+
+(deftask check-with-report []
+  (comp
+    (test-kibit)
+    (test-eastwood)
+    (check/report :options {:reporter :html})))
 
 (bootlaces! +version+)
 

@@ -11,7 +11,8 @@
                   message
                   coords
                   issue-form
-                  hint-form])
+                  hint-form
+                  custom-attributes])
 (defn coords
   ([file line column]
    (coords file line column nil nil))
@@ -30,7 +31,7 @@
   ([linter category key message coords severity issue-form]
    (issue linter category key message coords severity issue-form nil))
   ([linter category key message coords severity issue-form hint-form]
-   (Issue. linter category key severity message coords issue-form hint-form)))
+   (Issue. linter category key severity message coords issue-form hint-form nil)))
 
 (defn group-by-category [issues])
 
@@ -58,12 +59,3 @@
         (spit str-content))
      (let [new (-> fileset (c/add-source tmpdir))]
        (c/commit! new))))
-
-(defn- make-issue-handler [issues options]
-  (fn [issue]
-    (swap! issues conj issue)))
-
-(defn issues-handling [options]
-  (let [issues (atom [])]
-    {:on-issue (make-issue-handler issues options)
-     :issues issues}))

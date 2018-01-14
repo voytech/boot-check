@@ -28,12 +28,13 @@
             {:keys [some-warnings] :as checks} (eastwood/eastwood {:source-paths sources#
                                                                    :exclude-linters ~exclude-linters
                                                                    :debug #{:compare-forms}})
-            {:keys [on-issue issues] :as handling} (m/issues-handling ~options)]
+
+            issues# (atom [])]
         (if some-warnings
           (do
             (boot.util/warn (str "\nWARN: eastwood found some problems ^^^ \n\n"))
             {:errors (eastwood/eastwood-core (eastwood/last-options-map-adjustments  ;; TODO rerun to get the actual errors, but otherwise need to rewrite eastwood/eastwood
                                               {:source-paths sources#
-                                               :callback (checker/eastwood-linting-callback on-issue ~options)}))
-             :warnings @issues})
+                                               :callback (checker/eastwood-linting-callback #(swap! issues# conj %) ~options)}))
+             :warnings @issues#})
           (boot.util/info "\nlatest report from eastwood.... [You Rock!]\n"))))))

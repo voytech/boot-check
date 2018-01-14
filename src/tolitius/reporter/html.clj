@@ -58,8 +58,7 @@
           [:tbody
            (doall (map issue-table-cell issues))]]]]))
 
-(defmethod r/report :html [fileset tmpdir options]
+(defmethod r/report :html [issues options]
   (println "reporting to html")
-  (let [issues (m/load-issues fileset)
-        page (build issues options)]
+  (let [page (build issues options)]
     (spit "issues.html" page)))
