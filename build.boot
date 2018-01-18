@@ -44,6 +44,7 @@
 
 (deftask check-with-report []
   (comp
+    (watch)
     (test-kibit)
     (test-eastwood)
     (test-yagni)

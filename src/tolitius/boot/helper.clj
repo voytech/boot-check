@@ -3,7 +3,7 @@
             [boot.pod  :as pod]))
 
 (defn tmp-dir-paths [fs]
-  (mapv #(.getAbsolutePath %) 
+  (mapv #(.getAbsolutePath %)
         (core/input-dirs fs)))
 
 (defn fileset->paths [fileset]
@@ -16,4 +16,4 @@
                             into deps)
         pool (pod/pod-pool pod-deps :init init)]
     (core/cleanup (pool :shutdown))
-  pool))
+   pool))

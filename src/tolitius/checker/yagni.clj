@@ -14,30 +14,22 @@
   (s/join "\n" s))
 
 (defn- namespace->file [namespace]
-  namespace)
+  (-> (clojure.string/replace (str namespace) #"\." "\\\\")
+      (clojure.string/replace #"/.*" ".clj")))
 
-(defn- family-desc [family]
+(defn- error-desc [family varname]
   (cond
-    (= family :no-refs) "Could not find any references to this function"
-    (= family :no-parent-refs) "The following have references to them, but their parents do not"))
+    (= family :no-refs) (str  "Could not find any reference to Var " varname)
+    (= family :no-parent-refs) (str "Var " varname " is referenced by unused code")))
 
 (defn to-issue [namespace family]
   (->> (coords (namespace->file namespace) 0 0)
-       (issue :yagni family (family-desc family))))
+       (issue :yagni family (error-desc family (str namespace)))))
 
 (defn check-graph [find-family g]
   (let [{:keys [children parents]} (find-family @g)]
     (concat (mapv #(to-issue % :no-parent-refs) (vec children))
             (mapv #(to-issue % :no-refs) (vec parents)))))
-    ;(cond-> {}
-    ;  (seq parents) (assoc :no-refs (set parents))
-    ;  (seq children) (assoc :no-parent-refs (set children)))))
-
-;(defn report [{:keys [no-refs no-parent-refs]}]
-;  (when no-refs
-;    (boot.util/warn (str "\nWARN: could not find any references to the following:\n\n" (pp no-refs) "\n")))
-;  (when no-parent-refs
-;    (boot.util/warn (str "\nWARN: the following have references to them, but their parents do not:\n\n" (pp no-parent-refs) "\n"))))
 
 (defn create-entry-points [entry-points]
   (when entry-points

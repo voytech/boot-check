@@ -14,6 +14,12 @@
     (= severity "severe") "table-danger"
     :else ""))
 
+(defn report-header []
+  [:nav {:class "navbar navbar-inverse bg-faded"}
+    [:a {:class "navbar-brand" :href "#"}
+     [:img {:src "logo.svg"  :width "50px" :class "rounded img-thumbnail"}]
+     "oot Check Reporting"]])
+
 (defn issue-details [issue]
   (let [{:keys [linter-tool message key severity coords]} issue]
     [:div {:class "card border-warning mb-3" :style "max-width: 40rem;"}
@@ -45,7 +51,8 @@
                  :integrity "sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
                  :crossorigin "anonymous"}]]]
     [:body
-      [:h1 "Found issues:"]
+      (report-header)
+      [:h5 {:class "p-3"} "Boot-Check and companions have found following issues:"]
       [:div {:class "container-fluid"}
         [:table {:class "table table-sm table-responsive table-striped"}
           [:thead
