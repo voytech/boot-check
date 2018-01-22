@@ -20,6 +20,8 @@
      [:img {:src "logo.svg"  :width "50px" :class "rounded img-thumbnail"}]
      "oot Check Reporting"]])
 
+(defn report-code [code])
+
 (defn issue-details [issue]
   (let [{:keys [linter-tool message key severity coords]} issue]
     [:div {:class "card border-warning mb-3" :style "max-width: 40rem;"}

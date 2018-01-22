@@ -1,6 +1,4 @@
-(ns tolitius.core.model
-  (:require [boot.core :as c]
-            [clojure.java.io :as io]))
+(ns tolitius.core.model)
 
 (defrecord Coords [file line column line-end column-end])
 
@@ -43,19 +41,3 @@
 
 (defn group-by-file [issues]
   (group-by #(->> % :coords :file) issues))
-
-(defn load-issues [fileset]
-  (if-let [issues (->> fileset c/input-files (c/by-name ["issues.edn"]) first)]
-    (read-string (-> issues c/tmp-file slurp))
-    []))
-
-(defn append-issues [fileset tmpdir issues]
-  (c/empty-dir! tmpdir)
-  (let [content (concat (load-issues fileset) issues)
-        str-content (pr-str content)
-        issues-file (io/file tmpdir "issues.edn")]
-     (doto issues-file
-        io/make-parents
-        (spit str-content))
-     (let [new (-> fileset (c/add-source tmpdir))]
-       (c/commit! new))))

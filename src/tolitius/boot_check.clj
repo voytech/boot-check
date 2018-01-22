@@ -9,7 +9,24 @@
             [tolitius.core.reporting :as r]
             [tolitius.reporter.html :refer :all]
             [boot.core :as core :refer [deftask]]
+            [clojure.java.io :as io]
             [boot.pod  :as pod]))
+
+(defn load-issues [fileset]
+  (if-let [issues (->> fileset core/input-files (core/by-name ["issues.edn"]) first)]
+    (read-string (-> issues core/tmp-file slurp))
+    []))
+
+(defn append-issues [fileset tmpdir issues]
+  (core/empty-dir! tmpdir)
+  (let [content (concat (load-issues fileset) issues)
+        str-content (pr-str content)
+        issues-file (io/file tmpdir "issues.edn")]
+     (doto issues-file
+        io/make-parents
+        (spit str-content))
+     (let [new (-> fileset (core/add-source tmpdir))]
+       (core/commit! new))))
 
 (def pod-deps
   '[[org.clojure/tools.namespace "0.2.11" :exclusions [org.clojure/clojure]]])
@@ -31,7 +48,7 @@
       (throw (ex-info msg
                       {:causes errors})))
     (when warnings
-      (m/append-issues fileset tmpdir warnings))))
+      (append-issues fileset tmpdir warnings))))
 
 
 (deftask with-kibit
@@ -98,13 +115,12 @@
       (with-result fileset tmpdir
                   #(bikeshed/check pod-pool fileset options)  ;; TODO with args
                   "bikeshed checks fail"
-                  throw-on-errors)
-      fileset)))
+                  throw-on-errors))))
 
 (deftask report
   [o options OPTIONS edn "Reporting options"]
   (let [tmpdir (core/tmp-dir!)]
     (core/with-pre-wrap fileset
-      (when-let [issues (m/load-issues fileset)]
+      (when-let [issues (load-issues fileset)]
         (r/report issues options)
         fileset))))

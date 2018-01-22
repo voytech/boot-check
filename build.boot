@@ -18,7 +18,7 @@
 (deftask test-yagni []
   (set-env! :source-paths #{"src" "test"})
   (comp
-    (check/with-yagni)
+    ;(check/with-yagni)
     (check/with-yagni :throw-on-errors false :options {:entry-points ["test.with-yagni/-main"
                                                                       "test.with-yagni/func-the-second"
                                                                       42]})))
