@@ -23,8 +23,7 @@
     (= family :no-parent-refs) (str "Var " varname " is referenced by unused code")))
 
 (defn to-issue [namespace family]
-  (->> (coords (namespace->file namespace) 0 0)
-       (issue :yagni family (error-desc family (str namespace)))))
+  (issue :yagni family (error-desc family (str namespace)) (coords (namespace->file namespace) 0 0) nil))
 
 (defn check-graph [find-family g]
   (let [{:keys [children parents]} (find-family @g)]

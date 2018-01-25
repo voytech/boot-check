@@ -10,10 +10,9 @@
   (fn [{:keys [warn-data kind] :as data}]
     (when (= :lint-warning kind)
       (let [{:keys [file line column linter msg form]} warn-data
-            issue (->> (coords file line column)
-                       (issue :eastwood linter msg))]
+            issue (issue :eastwood linter msg (coords file line column) nil)]
         (if-let [warn-contents (load-issue-related-file-part files issue 5)]
-          (handle-issue (assoc issue :custom-attributes {:warn-content warn-contents}))
+          (handle-issue (assoc issue :snippet warn-contents))
           (handle-issue issue))))))
 
 (defn check [pod-pool fileset options & args]

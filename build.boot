@@ -44,11 +44,15 @@
 
 (deftask check-with-report []
   (comp
-    (watch)
     (test-kibit)
     (test-eastwood)
     (test-yagni)
     (check/report :options {:reporter :html})))
+
+(deftask check-with-report-watch []
+  (comp
+    (watch)
+    (check-with-report)))
 
 (bootlaces! +version+)
 

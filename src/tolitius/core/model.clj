@@ -2,12 +2,14 @@
 
 (defrecord Coords [file line column line-end column-end])
 
-(defrecord Issue [linter-tool
+(defrecord Issue [id
+                  linter-tool
                   category
                   key
                   severity
                   message
                   coords
+                  snippet
                   issue-form
                   hint-form
                   custom-attributes])
@@ -19,17 +21,19 @@
 
 (defn issue
   ([linter message coords]
-   (issue linter nil message coords))
-  ([linter key message coords]
-   (issue linter nil key message coords))
-  ([linter category key message coords]
-   (issue linter category key message coords :normal))
-  ([linter category key message coords severity]
-   (issue linter category key message coords severity nil))
-  ([linter category key message coords severity issue-form]
-   (issue linter category key message coords severity issue-form nil))
-  ([linter category key message coords severity issue-form hint-form]
-   (Issue. linter category key severity message coords issue-form hint-form nil)))
+   (issue linter nil message coords nil))
+  ([linter message coords snippet]
+   (issue linter nil message coords snippet))
+  ([linter key message coords snippet]
+   (issue linter nil key message coords snippet))
+  ([linter category key message coords snippet]
+   (issue linter category key message coords :normal snippet))
+  ([linter category key message coords severity snippet]
+   (issue linter category key message coords severity snippet nil))
+  ([linter category key message coords severity snippet issue-form]
+   (issue linter category key message coords severity snippet issue-form nil))
+  ([linter category key message coords severity snippet issue-form hint-form]
+   (Issue. (str (java.util.UUID/randomUUID)) linter category key severity message coords snippet issue-form hint-form nil)))
 
 (defn group-by-category [issues])
 

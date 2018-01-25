@@ -25,6 +25,4 @@
           end  (+ line offset-lines)
           input-file (first (filter #(.endsWith % file) inputs))]
       (with-open [rdr (clojure.java.io/reader input-file)]
-        (let [contents (doall (filter #(and (<= start (first %)) (>= end (first %))) (map-indexed vector (line-seq rdr))))]
-          (println (str "warnings from file " input-file))
-          (doseq [line contents] (println line)))))))
+        (doall (filter #(and (<= start (first %)) (>= end (first %))) (map-indexed (fn [i v] [(inc i) v]) (line-seq rdr))))))))        

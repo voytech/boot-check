@@ -14,8 +14,7 @@
         msg (str "Replace [ " (pr-str expr) " ] with [ " (pr-str alt) " ]")
         file "-"
         linter "kibit"]
-    (->> (coords file line column)
-         (issue :kibit linter msg))))
+    (issue :kibit linter msg (coords file line column) nil)))
 
 (defn check [pod-pool fileset & args]
   (let [worker-pod (pod-pool :refresh)
