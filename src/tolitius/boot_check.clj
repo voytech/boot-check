@@ -12,21 +12,27 @@
             [clojure.java.io :as io]
             [boot.pod  :as pod]))
 
+(defn store-tmp-file [fileset tmpdir content filename]
+  (core/empty-dir! tmpdir)
+  (let [content-file (io/file tmpdir filename)]
+    (doto content-file
+      io/make-parents
+      (spit content))
+    (let [new (-> fileset (core/add-source tmpdir))]
+      (core/commit! new))))
+
 (defn load-issues [fileset]
   (if-let [issues (->> fileset core/input-files (core/by-name ["issues.edn"]) first)]
     (read-string (-> issues core/tmp-file slurp))
     []))
 
 (defn append-issues [fileset tmpdir issues]
-  (core/empty-dir! tmpdir)
   (let [content (concat (load-issues fileset) issues)
-        str-content (pr-str content)
-        issues-file (io/file tmpdir "issues.edn")]
-     (doto issues-file
-        io/make-parents
-        (spit str-content))
-     (let [new (-> fileset (core/add-source tmpdir))]
-       (core/commit! new))))
+        str-content (pr-str content)]
+    (store-tmp-file fileset tmpdir str-content "issues.edn")))
+
+(defn write-report [fileset tmpdir report]
+  (store-tmp-file fileset tmpdir report "report.html"))
 
 (def pod-deps
   '[[org.clojure/tools.namespace "0.2.11" :exclusions [org.clojure/clojure]]])
@@ -122,5 +128,5 @@
   (let [tmpdir (core/tmp-dir!)]
     (core/with-pre-wrap fileset
       (when-let [issues (load-issues fileset)]
-        (r/report issues options)
-        fileset))))
+        (let [report-content (r/report issues options)]
+          (write-report fileset tmpdir report-content))))))

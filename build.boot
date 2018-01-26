@@ -44,9 +44,9 @@
 
 (deftask check-with-report []
   (comp
-    (test-kibit)
+    ;(test-kibit)
     (test-eastwood)
-    (test-yagni)
+    ;(test-yagni)
     (check/report :options {:reporter :html})))
 
 (deftask check-with-report-watch []
