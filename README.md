@@ -31,6 +31,7 @@ It relies on universe tested [kibit](https://github.com/jonase/kibit),
   - [Yagni Exceptions](#yagni-exceptions)
   - [Eastwood Exceptions](#eastwood-exceptions)
   - [Bikeshed Exceptions](#bikeshed-exceptions)
+- [Reporting](#reporting)  
 - [Demo](#demo)
 - [License](#license)
 
@@ -425,6 +426,15 @@ boot.user=> *e
 ```
 
 In case of Bikeshed, no errors / warnings are retured, since its own internal checks just return true/false values. But the exception is raised nevertheless to indicate that some checks have failed.
+
+## Reporting
+
+As long as standard console output may be sometimes difficult to read - especially if there are lot of issues - boot-check contains reporting task 'check-with-report' which generates analysis reports. Task 'check-with-reports' uses multimethod dispatch - thus You can generate default hiccup report by using following option:
+
+```clojure
+(check/check-with-report :options {:reporter :html})
+```
+Above option will trigger default hiccup html reporter, but You are free to implement your custom reporter and pass reporter id option to dispatch to your own implementation.
 
 ## Demo
 
