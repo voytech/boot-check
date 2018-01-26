@@ -429,10 +429,10 @@ In case of Bikeshed, no errors / warnings are retured, since its own internal ch
 
 ## Reporting
 
-As long as standard console output may be sometimes difficult to read - especially if there are lot of issues - boot-check contains reporting task 'check-with-report' which generates analysis reports. Task 'check-with-reports' uses multimethod dispatch - thus You can generate default hiccup report by using following option:
+As long as standard console output may be sometimes difficult to read - especially if there are lot of issues - boot-check contains reporting task 'boot-check-report' which generates analysis reports. Task 'boot-check-report' uses multimethod dispatch - thus You can generate default hiccup report by using following option:
 
 ```clojure
-(check/check-with-report :options {:reporter :html})
+(check/boot-check-report :options {:reporter :html})
 ```
 Above option will trigger default hiccup html reporter, but You are free to implement your custom reporter and pass reporter id option to dispatch to your own implementation.
 
