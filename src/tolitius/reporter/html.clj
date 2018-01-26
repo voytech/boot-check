@@ -3,8 +3,6 @@
             [tolitius.core.reporting :as r]
             [hiccup.core :refer :all]))
 
-
-
 (defn- severity-style [severity]
   (cond
     (= severity "normal") "table-warning"
@@ -12,13 +10,21 @@
     :else ""))
 
 (defn- report-header []
-  [:nav {:class "navbar navbar-inverse bg-faded"}
-    [:a {:class "navbar-brand" :href "#"}
-     [:img {:src "logo.svg"  :width "50px" :class "rounded img-thumbnail"}]
-     "oot Check Report"]])
+  [:nav {:class "navbar navbar-expand-lg navbar-dark bg-dark"}
+    [:a {:class "navbar-brand" :href "#"} "Boot Check Report"]
+    [:div {:class "collapse navbar-collapse"}
+      [:ul {:class "navbar-nav mr-auto"}
+        [:li {:class "nav-item active"} [:a {:class "nav-link"} "Issues"]]
+        [:li {:class "nav-item"} [:a {:class "nav-link"} "Statistics"]]]
+      [:div  {:style "color:white"} (str "Report Time : " (java.util.Date.))]]])
+
+(defn- with-style [current-line-nr error-line-nr]
+  (cond-> "white-space:pre-wrap;word-wrap:break-word;"
+      (= current-line-nr error-line-nr) (str "background-color:red;color:white;")
+      (not= current-line-nr error-line-nr) (str "background-color:white;color:black;")))
 
 (defn- render-line [nr content warning-line]
-  [:code {:class "row" :style (str (if (= warning-line nr) "background-color:red;color:white;" "background-color:white;color:black;") "white-space:pre-wrap;word-wrap:break-word;")}
+  [:code {:class "row" :style (with-style nr warning-line)}
       (str nr "." content)])
 
 (defn- code-snippet [issue]
@@ -91,7 +97,7 @@
             (reduce insert-rows [:tbody] issues)]]]]))
 
 (defmethod r/report :html [issues options]
-  (boot.util/dbug "reporting to html")
+  (boot.util/info "reporting to html...")
   (let [page (build issues options)]
     (spit "issues.html" page)
     page))

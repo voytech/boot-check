@@ -13,27 +13,27 @@
 (deftask test-kibit []
   (set-env! :source-paths #{"src" "test"})
   (comp
-    (check/with-kibit :throw-on-errors false)))
+    (check/with-kibit)))
 
 (deftask test-yagni []
   (set-env! :source-paths #{"src" "test"})
   (comp
     ;(check/with-yagni)
-    (check/with-yagni :throw-on-errors false :options {:entry-points ["test.with-yagni/-main"
-                                                                      "test.with-yagni/func-the-second"
-                                                                      42]})))
+    (check/with-yagni :options {:entry-points ["test.with-yagni/-main"
+                                               "test.with-yagni/func-the-second"
+                                               42]})))
 
 (deftask test-eastwood []
   (set-env! :source-paths #{"src" "test"})
   (comp
-    (check/with-eastwood :throw-on-errors false :options {:exclude-linters [:unused-ret-vals]})))
+    (check/with-eastwood :options {:exclude-linters [:unused-ret-vals]})))
 
 (deftask test-bikeshed []
   (set-env! :source-paths #{"src" "test"})
   (comp
     (check/with-bikeshed)
-    (check/with-bikeshed :throw-on-errors true :options {:verbose true}
-                                                        :max-line-length 42)))
+    (check/with-bikeshed :options {:verbose true
+                                   :max-line-length 42})))
 
 (deftask check-all []
   (comp
@@ -44,10 +44,11 @@
 
 (deftask check-with-report []
   (comp
-    ;(test-kibit)
+    (test-kibit)
     (test-eastwood)
-    ;(test-yagni)
-    (check/report :options {:reporter :html})))
+    (test-yagni)
+    (check/report :options {:reporter :html})
+    (check/throw-exception)))
 
 (deftask check-with-report-watch []
   (comp
