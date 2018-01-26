@@ -2,9 +2,10 @@
   (:require [tolitius.boot.helper :refer :all]
             [tolitius.core.model :refer :all]
             [boot.core :as core]
+            [tolitius.core.check :as ch]
             [boot.pod  :as pod]))
 
-(def kibit-deps
+(defmethod ch/checker-deps :kibit [checker]
   '[[jonase/kibit "0.1.5"]
     [org.clojure/tools.cli "0.3.3"]])
 
@@ -16,7 +17,7 @@
         linter "kibit"]
     (issue :kibit linter msg (coords file line column) nil)))
 
-(defn check [pod-pool fileset & args]
+(defmethod ch/check :kibit [checker pod-pool fileset & args]
   (let [worker-pod (pod-pool :refresh)
         namespaces (pod/with-eval-in worker-pod
                      (all-ns* ~@(->> fileset
@@ -32,5 +33,5 @@
         (if-not (zero? (count problems#))
           (do
             (boot.util/warn (str "\nWARN: kibit found some problems: \n\n" {:problems (set problems#)} "\n"))
-            {:warnings (mapv checker/normalise-issue (vec problems#))})             
+            {:warnings (mapv checker/normalise-issue (vec problems#))})
           (boot.util/info "\nlatest report from kibit.... [You Rock!]\n"))))))

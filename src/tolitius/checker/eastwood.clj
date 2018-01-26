@@ -1,9 +1,10 @@
 (ns tolitius.checker.eastwood
   (:require [tolitius.boot.helper :refer :all]
             [tolitius.core.model :refer :all]
+            [tolitius.core.check :as ch]
             [boot.pod  :as pod]))
 
-(def eastwood-deps
+(defmethod ch/checker-deps :eastwood [checker]
   '[[jonase/eastwood "0.2.5" :exclusions [org.clojure/clojure]]])
 
 (defn eastwood-linting-callback [files handle-issue options]
@@ -15,7 +16,7 @@
           (handle-issue (assoc issue :snippet warn-contents))
           (handle-issue issue))))))
 
-(defn check [pod-pool fileset options & args]
+(defmethod ch/check :eastwood [checker pod-pool fileset options & args]
   (let [worker-pod (pod-pool :refresh)
         inputs (fileset->paths fileset)
         exclude-linters (:exclude-linters options)]

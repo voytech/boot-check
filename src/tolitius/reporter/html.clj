@@ -11,11 +11,11 @@
 
 (defn- report-header []
   [:nav {:class "navbar navbar-expand-lg navbar-dark bg-dark"}
-    [:a {:class "navbar-brand" :href "#"} "Boot Check Report"]
+    [:a {:class "navbar-brand" :href "#"} "Boot-Check Report"]
     [:div {:class "collapse navbar-collapse"}
       [:ul {:class "navbar-nav mr-auto"}
         [:li {:class "nav-item active"} [:a {:class "nav-link"} "Issues"]]
-        [:li {:class "nav-item"} [:a {:class "nav-link"} "Statistics"]]]
+        [:li {:class "nav-item"} [:a {:class "nav-link"} "Info"]]]
       [:div  {:style "color:white"} (str "Report Time : " (java.util.Date.))]]])
 
 (defn- with-style [current-line-nr error-line-nr]

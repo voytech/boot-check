@@ -2,9 +2,10 @@
   (:require [boot.pod :as pod]
             [tolitius.core.model :refer :all]
             [tolitius.boot.helper :refer :all]
+            [tolitius.core.check :as ch]
             [clojure.string :as s]))
 
-(def yagni-deps
+(defmethod ch/checker-deps :yagni [checker]
   '[[venantius/yagni "0.1.4" :exclusions [org.clojure/clojure]]])
 
 ;; yagni implementation (07/26/2016) is coupled with a lein specific file
@@ -36,7 +37,7 @@
          (apply str)
          (spit entry-points-file))))
 
-(defn check [pod-pool fileset {:keys [entry-points]}]
+(defmethod ch/check :yagni [checker pod-pool fileset {:keys [entry-points]}]
   (let [worker-pod (pod-pool :refresh)
         sources (fileset->paths fileset)]
     (pod/with-eval-in worker-pod

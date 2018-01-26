@@ -13,7 +13,7 @@
 (deftask test-kibit []
   (set-env! :source-paths #{"src" "test"})
   (comp
-    (check/with-kibit)))
+    (check/with-kibit :throw-on-errors true)))
 
 (deftask test-yagni []
   (set-env! :source-paths #{"src" "test"})
@@ -47,8 +47,8 @@
     (test-kibit)
     (test-eastwood)
     (test-yagni)
-    (check/report :options {:reporter :html})
-    (check/throw-exception)))
+    (check/boot-check-report :options {:reporter :html})
+    (check/throw-on-errors)))
 
 (deftask check-with-report-watch []
   (comp
