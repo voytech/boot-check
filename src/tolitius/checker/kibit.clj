@@ -31,9 +31,6 @@
       (doseq [ns '~namespaces] (require ns))
       (let [problems# (apply kibit.driver/run '~sources nil '~args)]   ;; nil for "rules" which would expand to all-rules,
         (if-not (zero? (count problems#))
-          (do
-            (boot.util/warn (str "\nWARN: kibit found some problems: \n\n" {:problems (set problems#)} "\n"))
-            {:warnings (mapv checker/normalise-issue (vec problems#))})
-          (do
-            (boot.util/info "\nlatest report from kibit.... [You Rock!]\n")
-            {:warnings []}))))))
+          (boot.util/warn (str "\nWARN: kibit found some problems: \n\n" {:problems (set problems#)} "\n"))
+          (boot.util/info "\nlatest report from kibit.... [You Rock!]\n"))
+        {:warnings (or (mapv checker/normalise-issue (vec problems#)) [])}))))

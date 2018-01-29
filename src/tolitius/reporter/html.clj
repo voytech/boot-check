@@ -25,7 +25,7 @@
 
 (defn- render-line [nr content warning-line]
   [:code {:class "row" :style (with-style nr warning-line)}
-      (str nr "." content)])
+      [:span {:class "pr-2 pl-2" :style "background-color:lightgray;color:gray"} nr] content])
 
 (defn- code-snippet [issue]
   (let [{:keys [snippet coords]} issue]
@@ -61,7 +61,7 @@
 (defn- snippet-modal [issue]
   [:div {:class "modal fade bd-example-modal-lg" :id (:id issue) :tabindex -1 :role "dialog" :aria-hidden true}
     [:div {:class "modal-dialog modal-lg" :role "document"}
-      [:div {:class "modal-content"}
+      [:div {:class "modal-content pr-3 pl-3"}
         [:div {:class "modal-body"}
           (code-snippet issue)]]]])
 
