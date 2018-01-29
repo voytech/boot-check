@@ -357,6 +357,8 @@ All tasks (i.e. for kibit, yagni, eastwood, bikeshed, etc.) accept an optional f
 
 that if set will report all the problems found with the task, and then throw an exception.
 
+For some cases when You want to handle exceptions globaly for all code checkers used in your boot pipline You need to use task called 'throw-on-errors'. This is because when using flag on particular checker task - exception will be thrown and pipline will be not continued. This is not perfect approach as long as You still may want to report all errors from other linters. That is why the best place for 'throw-on-errors' task is the end of the pipline. By using 'throw-on-errors' task You can get all errors aggregated within single exception, You can generate html (or possibly other format) report, and finally You can prevent normal pipeline execution (the part of pipeline after the 'throw-on-errors').
+
 Here are some examples:
 
 ```clojure
@@ -428,12 +430,30 @@ In case of Bikeshed, no errors / warnings are retured, since its own internal ch
 
 ## Reporting
 
-As long as standard console output may be sometimes difficult to read - especially if there are lot of issues - boot-check contains reporting task 'boot-check-report' which generates analysis reports. Task 'boot-check-report' uses multimethod dispatch - thus You can generate default hiccup report by using following option:
+As long as standard console output may be sometimes difficult to read - especially if there are lot of issues - boot-check contains reporting task 'boot-check-report' which generates html reports from all of above code checkers. With 'boot-check-report' task You can generate default hiccup powered html report using option swith like this one:
 
 ```clojure
 (check/boot-check-report :options {:reporter :html})
 ```
-Above option will trigger default hiccup html reporter, but You are free to implement your custom reporter and pass reporter id option to dispatch to your own implementation.
+Or You can register your own reporter. This is possible because boot-check-report internally delegates reporting to specific reporter using multimethod dispatch. For new reporter just implement this method: 
+
+```clojure
+(defmethod tolitius.core.reporting/report :custom-reporter-key-goes-here [issues options])
+```
+Also You need to require your namespace containing above defmethod to evaluate it (probably in build.boot). 
+
+Look at how typical pipeline with reporting enabled (and additoinal throw-on-errors task) can look like:
+
+```clojure
+(deftask check-with-report []
+  (comp
+    (test-kibit)
+    (test-eastwood)
+    (test-yagni)
+    (test-bikeshed)
+    (check/boot-check-report :options {:reporter :html})
+    (check/throw-on-errors)))
+```
 
 ## Demo
 
