@@ -42,4 +42,4 @@
             {:warnings (vec @issues#)})
           (do
             (boot.util/info "\nlatest report from eastwood.... [You Rock!]\n")
-            {:warnings []}))))))    
+            {:warnings []}))))))

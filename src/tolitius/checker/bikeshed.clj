@@ -13,7 +13,7 @@
     (pod/with-eval-in worker-pod
       (require '[bikeshed.core])
       (let [sources# ~(tmp-dir-paths fileset)
-            _ (boot.util/info (str "bikeshed is about to look at: -- " sources# " --"))
+            _ (boot.util/dbug (str "bikeshed is about to look at: -- " sources# " --"))
             args# (update ~@args :check? #(merge % {}))
             problems# (bikeshed.core/bikeshed {:source-paths sources#} args#)]
         (if problems#
