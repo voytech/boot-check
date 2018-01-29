@@ -23,9 +23,7 @@
     (pod/with-eval-in worker-pod
       (require '[eastwood.lint :as eastwood]
                '[tolitius.checker.eastwood :as checker]
-               '[tolitius.core.model :as m]
-               '[hiccup.core :refer :all])
-
+               '[tolitius.core.model :as m])              
       (let [sources# #{~@(tmp-dir-paths fileset)}
             _ (boot.util/dbug (str "eastwood is about to look at: -- " sources# " --"))
             {:keys [some-warnings] :as checks} (eastwood/eastwood {:source-paths sources#

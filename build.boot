@@ -48,6 +48,7 @@
     (test-kibit)
     (test-eastwood)
     (test-yagni)
+    (test-bikeshed)
     (check/boot-check-report :options {:reporter :html})
     (check/throw-on-errors)))
 

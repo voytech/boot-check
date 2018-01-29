@@ -10,13 +10,15 @@
                                         org.clojure/tools.namespace]]])
 
 (defn to-warning [problems]
-  (when problems  
-    (issue :bikeshed :summary (str "Following bikeshed checks failed : " problems) (coords " ? " " ? " " ? ") nil)))
+  (when problems
+    (do
+     [(issue :bikeshed :summary (str "Following bikeshed checks failed : " (clojure.string/join ", " problems)) (coords " ? " " ? " " ? ") nil)])))
 
 (defmethod ch/check :bikeshed [checker pod-pool fileset & args]
   (let [worker-pod (pod-pool :refresh)]
     (pod/with-eval-in worker-pod
-      (require '[bikeshed.core])
+      (require '[bikeshed.core]
+               '[tolitius.checker.bikeshed :as checker])
       (let [sources# ~(tmp-dir-paths fileset)
             _ (boot.util/dbug (str "bikeshed is about to look at: -- " sources# " --"))
             args# (update ~@args :check? #(merge % {}))
@@ -24,4 +26,4 @@
         (if problems#
           (boot.util/warn (str "\nWARN: bikeshed found some problems ^^^ \n"))
           (boot.util/info "\nlatest report from bikeshed.... [You Rock!]\n"))
-        {:warnings (or (to-warning problems#) [])}))))
+        {:warnings (or (checker/to-warning problems#) [])}))))

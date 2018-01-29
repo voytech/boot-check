@@ -41,6 +41,9 @@
         [:li {:class "list-group-item"} (str (:file coords) " [ " (:line coords) ":" (:column coords) " ] ")]
         [:li {:class "list-group-item"} [:span "Severity"] [:b (name severity)]]]]))
 
+(defn- has-details? [issue]
+  (not (nil? (:snippet issue))))
+
 (defn- issue-table-cell [issue]
   (let [{:keys [id linter-tool message key severity coords]} issue]
     [:tr {:class (severity-style severity)}
@@ -50,13 +53,13 @@
       [:td (:file coords)]
       [:td (str "[ " (:line coords) ":" (:column coords) " ]")]
       [:td severity]
-      [:td [:a {:href "#" :data-toggle "modal" :data-target (str "#" id) } [:span "more"]]]]))
+      [:td (when (has-details? issue) [:a {:href "#" :data-toggle "modal" :data-target (str "#" id) } [:span "more"]])]]))
 
 (defn- insert-rows [aggr issue]
   (conj aggr (issue-table-cell issue)))
 
 (defn- issues-with-snippet [issues]
-  (filterv #(not (nil? (:snippet %))) issues))
+  (filterv has-details? issues))
 
 (defn- snippet-modal [issue]
   [:div {:class "modal fade bd-example-modal-lg" :id (:id issue) :tabindex -1 :role "dialog" :aria-hidden true}
