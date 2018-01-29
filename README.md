@@ -428,12 +428,17 @@ In case of Bikeshed, no errors / warnings are retured, since its own internal ch
 
 ## Reporting
 
-As long as standard console output may be sometimes difficult to read - especially if there are lot of issues - boot-check contains reporting task 'boot-check-report' which generates analysis reports. Task 'boot-check-report' uses multimethod dispatch - thus You can generate default hiccup report by using following option:
+As long as standard console output may be sometimes difficult to read - especially if there are lot of issues - boot-check contains reporting task 'boot-check-report' which generates html reports from all of above code checkers. With 'boot-check-report' task You can generate default hiccup powered html report using option swith like this one:
 
 ```clojure
 (check/boot-check-report :options {:reporter :html})
 ```
-Above option will trigger default hiccup html reporter, but You are free to implement your custom reporter and pass reporter id option to dispatch to your own implementation.
+Or You can register your own reporter. This is possible because boot-check-report internally delegates reporting to specific reporter using multimethod dispatch. For new reporter just implement this method: 
+
+```clojure
+(defmethod tolitius.core.reporting/report :custom-reporter-key-goes-here [issues options])
+```
+Also You need to require your namespace containing above defmethod to evaluate it (probably in build.boot). 
 
 ## Demo
 
