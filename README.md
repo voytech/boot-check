@@ -357,6 +357,8 @@ All tasks (i.e. for kibit, yagni, eastwood, bikeshed, etc.) accept an optional f
 
 that if set will report all the problems found with the task, and then throw an exception.
 
+For some cases when You want to handle exceptions globaly for all code checkers used in your boot pipline You need to use task called 'throw-on-errors'. This is because when using flag on particular checker task - exception will be thrown and pipline will be not continued. This is not perfect approach as long as You still may want to report all errors from other linters. That is why the best place for 'throw-on-errors' task is the end of the pipline. By using 'throw-on-errors' task You can get all errors aggregated within single exception, You can generate html (or possibly other format) report, and finally You can prevent normal pipeline execution (the part of pipeline after the 'throw-on-errors').
+
 Here are some examples:
 
 ```clojure
@@ -439,6 +441,19 @@ Or You can register your own reporter. This is possible because boot-check-repor
 (defmethod tolitius.core.reporting/report :custom-reporter-key-goes-here [issues options])
 ```
 Also You need to require your namespace containing above defmethod to evaluate it (probably in build.boot). 
+
+Look at how typical pipeline with reporting enabled (and additoinal throw-on-errors task) can look like:
+
+```clojure
+(deftask check-with-report []
+  (comp
+    (test-kibit)
+    (test-eastwood)
+    (test-yagni)
+    (test-bikeshed)
+    (check/boot-check-report :options {:reporter :html})
+    (check/throw-on-errors)))
+```
 
 ## Demo
 
