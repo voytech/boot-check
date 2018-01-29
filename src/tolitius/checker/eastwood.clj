@@ -40,4 +40,6 @@
                                         {:source-paths sources#
                                          :callback (checker/eastwood-linting-callback ~inputs #(swap! issues# conj %) ~options)}))
             {:warnings (vec @issues#)})
-          (boot.util/info "\nlatest report from eastwood.... [You Rock!]\n"))))))
+          (do
+            (boot.util/info "\nlatest report from eastwood.... [You Rock!]\n")
+            {:warnings []}))))))    

@@ -34,4 +34,6 @@
           (do
             (boot.util/warn (str "\nWARN: kibit found some problems: \n\n" {:problems (set problems#)} "\n"))
             {:warnings (mapv checker/normalise-issue (vec problems#))})
-          (boot.util/info "\nlatest report from kibit.... [You Rock!]\n"))))))
+          (do
+            (boot.util/info "\nlatest report from kibit.... [You Rock!]\n")
+            {:warnings []}))))))
