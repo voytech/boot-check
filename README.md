@@ -454,6 +454,23 @@ Look at how typical pipeline with reporting enabled (and additional throw-on-err
     (check/boot-check-report :options {:reporter :html})
     (check/throw-on-errors)))
 ```
+### Report samples
+And this is how reports look like : 
+
+-This is report grid: 
+
+![alt text](screen-1.png)
+
+-And this is details view - currently only snippet is showing in here.
+
+![alt text](screen-2.png)
+
+### Report limitations
+Due to implementation details of some of checkers (bikeshed, kibit) some limitations exists regarding amount of information visible on report. 
+- kibit currently does not return filenames, which makes it impossible to include it in the report (only stdout directly from kibit reports filenames :( )
+- bikeshed does not return issue details at all - it only returns some summary containing list of tests which has not passed. Because of that - reports only contain that summary for know for bikeshed.
+
+
 
 ## Demo
 
