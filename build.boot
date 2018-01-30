@@ -10,10 +10,12 @@
          '[adzerk.bootlaces :refer :all]
          '[boot.util])
 
+
 (deftask test-kibit []
   (set-env! :source-paths #{"src" "test"})
   (comp
-    (check/with-kibit :throw-on-errors true)))
+    (check/with-kibit)))
+
 
 (deftask test-yagni []
   (set-env! :source-paths #{"src" "test"})
@@ -49,7 +51,7 @@
     (test-eastwood)
     (test-yagni)
     (test-bikeshed)
-    (check/boot-check-report :options {:reporter :html})
+    (check/boot-check-report)
     (check/throw-on-errors)))
 
 (deftask check-with-report-watch []

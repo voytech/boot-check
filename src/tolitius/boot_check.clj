@@ -48,12 +48,18 @@
      (defn all-ns* [& dirs]
        (distinct (mapcat #(find-namespaces-in-dir (io/file %)) dirs))))))
 
-(defn- with-checker [checker options]
-  (let [pod-pool (make-pod-pool (concat pod-deps (check/checker-deps checker)) bootstrap)
-        tmpdir (core/tmp-dir!)]
-    (core/with-pre-wrap fileset
-      (when-let [{:keys [warnings]} (check/check checker pod-pool fileset options)]
-        (append-issues fileset tmpdir warnings)))))
+(defn- with-checker
+  ([checker throw? options]
+   (let [pod-pool (make-pod-pool (concat pod-deps (check/checker-deps checker)) bootstrap)
+         tmpdir (core/tmp-dir!)]
+     (core/with-pre-wrap fileset
+       (when-let [{:keys [warnings]} (check/check checker pod-pool fileset options)]
+         (when throw?
+           (boot.util/warn-deprecated (str "\nWARN: throw-on-errors OPTION should be replaced by adding throw-on-errors TASK at the end of pipeline!^^^ \n"))
+           (throw (ex-info (str (name checker) " checks fail") {:causes warnings})))
+         (append-issues fileset tmpdir warnings)))))
+  ([checker throw?]
+   (with-checker checker throw? nil)))
 
 (deftask with-kibit
   "Static code analyzer for Clojure, ClojureScript, cljx and other Clojure variants.
@@ -63,8 +69,7 @@
   At the moment it takes no arguments, but behold..! it will. (files, rules, reporters, etc..)"
   ;; [f files FILE #{sym} "the set of files to check."]      ;; TODO: convert these to "tmp-dir/file"
   [t throw-on-errors bool "throw an exception if the check does not pass"]
-  (when throw-on-errors (boot.util/warn-deprecated (str "\nWARN: throw-on-errors OPTION should be replaced by adding throw-on-errors TASK at the end of pipeline!^^^ \n")))
-  (with-checker :kibit nil))
+  (with-checker :kibit throw-on-errors))
 
 (deftask with-yagni
   "Static code analyzer for Clojure that helps you find unused code in your applications and libraries.
@@ -72,8 +77,7 @@
   This task will run all the yagni checks within a pod."
   [o options OPTIONS edn "yagni options EDN map"
    t throw-on-errors bool "throw an exception if the check does not pass"]
-  (when throw-on-errors (boot.util/warn-deprecated (str "\nWARN: throw-on-errors OPTION should be replaced by adding throw-on-errors TASK at the end of pipeline!^^^ \n")))
-  (with-checker :yagni options))
+  (with-checker :yagni throw-on-errors options))
 
 (deftask with-eastwood
   "Clojure lint tool that uses the tools.analyzer and tools.analyzer.jvm libraries to inspect namespaces and report possible problems
@@ -84,8 +88,7 @@
   ;; [f files FILE #{sym} "the set of files to check."]      ;; TODO: convert these to "tmp-dir/file"
   [o options OPTIONS edn "eastwood options EDN map"
    t throw-on-errors bool "throw an exception if the check does not pass"]
-  (when throw-on-errors (boot.util/warn-deprecated (str "\nWARN: throw-on-errors OPTION should be replaced by adding throw-on-errors TASK at the end of pipeline!^^^ \n")))
-  (with-checker :eastwood options))
+  (with-checker :eastwood throw-on-errors options))
 
 (deftask with-bikeshed
   "This task is backed by 'lein-bikeshed' which is designed to tell you your code is bad, and that you should feel bad
@@ -96,8 +99,7 @@
   ;; [f files FILE #{sym} "the set of files to check."]       ;; TODO: convert these to "tmp-dir/file"
   [o options OPTIONS edn "bikeshed options EDN map"
    t throw-on-errors bool "throw an exception if the check does not pass"]
-  (when throw-on-errors (boot.util/warn-deprecated (str "\nWARN: throw-on-errors OPTION should be replaced by adding throw-on-errors TASK at the end of pipeline!^^^ \n")))
-  (with-checker :bikeshed options))
+  (with-checker :bikeshed throw-on-errors options))
 
 (deftask boot-check-report
   "This task dispatches reporting into specific report multimethod which is choosen depending on options :reporter key.
@@ -109,10 +111,12 @@
   backed by boot filesets during pipline execution."
 
   [o options OPTIONS edn "Reporting options"]
-  (let [tmpdir (core/tmp-dir!)]
+  (let [tmpdir (core/tmp-dir!)
+        opts (merge {:reporter :html} options)]
     (core/with-pre-wrap fileset
       (when-let [issues (load-issues fileset)]
-        (let [report-content (r/report issues options)]
+        (let [report-content (r/report issues opts)]
+          (boot.util/info "\nGenerating report...\n")
           (write-report fileset tmpdir report-content))))))
 
 (deftask throw-on-errors
