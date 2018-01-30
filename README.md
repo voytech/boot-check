@@ -357,7 +357,7 @@ All tasks (i.e. for kibit, yagni, eastwood, bikeshed, etc.) accept an optional f
 
 that if set will report all the problems found with the task, and then throw an exception.
 
-For some cases when You want to handle exceptions globaly for all code checkers used in your boot pipline You need to use task called 'throw-on-errors'. This is because when using flag on particular checker task - exception will be thrown and pipline will be not continued. This is not perfect approach as long as You still may want to report all errors from other linters. That is why the best place for 'throw-on-errors' task is the end of the pipline. By using 'throw-on-errors' task You can get all errors aggregated within single exception, You can generate html (or possibly other format) report, and finally You can prevent normal pipeline execution (the part of pipeline after the 'throw-on-errors').
+For some cases when You want to handle exceptions for all code checkers used in your boot pipeline (not stop after first exception) You can use task called 'throw-on-errors'. This is because when using flag on particular checker task - exception will be thrown and pipeline will be not continued. This is not perfect approach as long as You still may want to report all errors from other 'pending' checkers. Task 'throw-on-errors' provided at the end of the pipeline will take all possible issues (persisted as part of boot input files) and throw exception which contains those issues under :causes map key. So by using 'throw-on-errors' task You can get all errors aggregated in single exception, and You are not preventing pipeline execution until You use that task - so You can achieve reporting for all checkers If You wish, and after that throw aggregated exception.
 
 Here are some examples:
 
@@ -430,19 +430,19 @@ In case of Bikeshed, no errors / warnings are retured, since its own internal ch
 
 ## Reporting
 
-As long as standard console output may be sometimes difficult to read - especially if there are lot of issues - boot-check contains reporting task 'boot-check-report' which generates html reports from all of above code checkers. With 'boot-check-report' task You can generate default hiccup powered html report using option swith like this one:
+As long as standard console output may be sometimes difficult to read - boot-check contains reporting task 'boot-check-report' which will generate html report from all selected code checkers. With 'boot-check-report' task You can generate default hiccup powered html report using option switch like this one (this is also default reporter when option is not provided):
 
 ```clojure
 (check/boot-check-report :options {:reporter :html})
 ```
-Or You can register your own reporter. This is possible because boot-check-report internally delegates reporting to specific reporter using multimethod dispatch. For new reporter just implement this method: 
+Or You can register your own reporter. This is possible because boot-check-report internally delegates reporting to specific reporter using multimethod dispatch. For new reporter just implement this method:
 
 ```clojure
 (defmethod tolitius.core.reporting/report :custom-reporter-key-goes-here [issues options])
 ```
-Also You need to require your namespace containing above defmethod to evaluate it (probably in build.boot). 
+Also You need to require your namespace containing above defmethod to evaluate it (probably in build.boot).
 
-Look at how typical pipeline with reporting enabled (and additoinal throw-on-errors task) can look like:
+Look at how typical pipeline with reporting enabled (and additional throw-on-errors task) can look like:
 
 ```clojure
 (deftask check-with-report []
